@@ -1,3 +1,47 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+    --brand-primary: #2563eb;
+    --brand-dark: #0f172a;
+    --surface-bg: #f8fafc;
+    --surface-card: #ffffff;
+    --text-primary: #0f172a;
+    --text-muted: #475569;
+    --border-soft: rgba(148, 163, 184, 0.25);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--text-primary);
+    background: var(--surface-bg);
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+.container,
+.container-fluid {
+    width: min(100%, 1200px);
+}
+
+.min-vh-100 {
+    min-height: 100vh;
+}

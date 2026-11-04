@@ -1,0 +1,69 @@
+.admin-app {
+    background: #f1f5f9;
+}
+
+.admin-sidebar {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.admin-sidebar .nav-link {
+    border-radius: 0.75rem;
+    color: #475569;
+    font-weight: 500;
+    padding: 0.75rem 0.9rem;
+}
+
+.admin-sidebar .nav-link.active {
+    background: #e0ecff;
+    color: #1d4ed8;
+}
+
+.admin-main {
+    padding: 1.5rem;
+}
+
+.admin-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.metric-card {
+    padding: 1.4rem;
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: #475569;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.metric-value {
+    font-size: clamp(1.8rem, 2vw, 2.4rem);
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.panel-card {
+    padding: 1.3rem;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.85rem;
+}

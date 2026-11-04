@@ -1,7 +1,21 @@
 <?php
 
+use App\Http\Controllers\Admin\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::view('/', 'public.home')->name('home');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [LoginController::class, 'login'])->name('login.submit')->middleware('throttle:10,1');
+    });
+
+    Route::middleware(['auth', 'admin'])->group(function () {
+        Route::get('/', fn () => view('admin.dashboard'))->name('dashboard');
+        Route::get('/guest-books', fn () => view('admin.guest-books'))->name('guest-books');
+        Route::get('/companies', fn () => view('admin.companies'))->name('companies');
+        Route::get('/settings', fn () => view('admin.settings'))->name('settings');
+        Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    });
 });
