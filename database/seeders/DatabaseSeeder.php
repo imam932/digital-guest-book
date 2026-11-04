@@ -18,7 +18,10 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'System Administrator',
                 'password' => Hash::make('Password123!'),
+                'role' => 'admin',
             ]
         );
+
+        $this->call(CompanySeeder::class);
     }
 }
