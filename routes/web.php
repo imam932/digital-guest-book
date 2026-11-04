@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Public\GuestBookController;
+use App\Http\Controllers\Public\MessageWallController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'public.home')->name('home');
+Route::view('/display', 'public.message-wall')->name('message-wall');
 Route::get('/guest-book', fn () => view('public.guest-book-form'))->name('guest-book.form');
 Route::post('/guest-book', [GuestBookController::class, 'store'])->name('guest-book.store');
 Route::get('/api/companies/active', function () {
@@ -12,6 +14,7 @@ Route::get('/api/companies/active', function () {
         \App\Models\Company::active()->select('id', 'name')->orderBy('name')->get()
     );
 })->name('companies.active');
+Route::get('/api/messages', [MessageWallController::class, 'index'])->name('messages.index');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {

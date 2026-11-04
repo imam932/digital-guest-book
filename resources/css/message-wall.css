@@ -1,0 +1,174 @@
+.message-wall-shell {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem;
+    background:
+        linear-gradient(135deg, rgba(11, 18, 32, 0.96), rgba(37, 99, 235, 0.82)),
+        url('/images/event-bg.jpg') center/cover no-repeat;
+    overflow: hidden;
+}
+
+.message-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.1rem;
+    align-items: start;
+    width: min(100%, 1500px);
+    margin: 0 auto;
+    min-height: 80vh;
+}
+
+.message-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
+    padding: 1rem 1rem 0.8rem;
+    border-radius: 1.2rem;
+    background: rgba(15, 23, 42, 0.66);
+    border: 1px solid rgba(191, 219, 254, 0.4);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(191, 219, 254, 0.12);
+    color: #f8fbff;
+    backdrop-filter: blur(8px);
+    animation: fadeUp 0.6s ease both;
+}
+
+.message-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 45%);
+    pointer-events: none;
+}
+
+.message-card__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.message-card__header strong {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.message-card__company {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #bfdbfe;
+    opacity: 0.9;
+}
+
+.message-card__body {
+    margin: 0;
+    color: rgba(240, 249, 255, 0.96);
+    line-height: 1.6;
+    font-size: 0.98rem;
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.message-card__time {
+    display: inline-block;
+    margin-top: 0.85rem;
+    color: rgba(191, 219, 254, 0.8);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.message-popup {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    z-index: 20;
+    width: min(420px, calc(100vw - 2rem));
+    padding: 1.15rem 1.2rem;
+    border-radius: 1rem;
+    background: rgba(10, 17, 30, 0.9);
+    border: 1px solid rgba(147, 197, 253, 0.45);
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.35);
+    color: #f8fbff;
+    animation: fadeSlideUp 0.45s ease both;
+}
+
+.message-popup.is-hiding {
+    animation: fadeOut 0.45s ease forwards;
+}
+
+.message-popup__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.message-popup__company {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #bfdbfe;
+    margin-top: 0.15rem;
+}
+
+.message-popup__body {
+    margin-top: 0.7rem;
+    line-height: 1.5;
+    color: rgba(224, 242, 254, 0.96);
+}
+
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeSlideUp {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(0, 12px, 0);
+    }
+}
+
+@media (max-width: 768px) {
+    .message-wall-shell {
+        padding: 1rem;
+    }
+
+    .message-wall {
+        grid-template-columns: 1fr;
+        min-height: 70vh;
+    }
+
+    .message-card {
+        min-height: 150px;
+    }
+
+    .message-popup {
+        right: 1rem;
+        bottom: 1rem;
+    }
+}
