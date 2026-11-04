@@ -1,0 +1,51 @@
+.guest-form-card {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.guest-form-card .form-control,
+.guest-form-card .form-select {
+    border-radius: 0.85rem;
+    min-height: 3.1rem;
+    padding: 0.9rem 1rem;
+    border-color: #dbe2ea;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guest-form-card .form-control:focus,
+.guest-form-card .form-select:focus {
+    border-color: #4f8ef7;
+    box-shadow: 0 0 0 0.2rem rgba(79, 142, 247, 0.15);
+}
+
+.guest-form-card textarea.form-control {
+    min-height: 12rem;
+}
+
+.guest-form-card .invalid-feedback {
+    display: block;
+    min-height: 1.25rem;
+    margin-top: 0.35rem;
+    color: #dc3545;
+}
+
+.guest-form-card .btn-primary {
+    min-height: 3.2rem;
+    border-radius: 0.9rem;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    .guest-form-card {
+        padding: 1.25rem;
+    }
+
+    .guest-form-card .btn-primary,
+    .guest-form-card .form-control,
+    .guest-form-card .form-select {
+        min-height: 3.4rem;
+    }
+}

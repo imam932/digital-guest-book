@@ -29,6 +29,11 @@ class Company extends Model
         'status' => 'string',
     ];
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
     /**
      * Prevent deleting a company that is still referenced by guest book entries.
      */

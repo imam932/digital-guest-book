@@ -11,9 +11,11 @@
             'resources/css/app.css',
             'resources/css/public.css',
             'resources/css/admin.css',
+            'resources/css/public-form.css',
             'resources/js/app.js',
             'resources/js/public.js',
             'resources/js/admin.js',
+            'resources/js/public-form.js',
         ])
     </head>
     <body class="@yield('body_class', '')">

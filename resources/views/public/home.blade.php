@@ -14,7 +14,7 @@
                         Capture attendee stories, celebrate milestones, and collect memorable messages in one interactive guest book.
                     </p>
                     <div class="d-flex flex-column flex-sm-row gap-3">
-                        <a href="#guest-book" class="btn btn-primary btn-lg px-4">Sign the guest book</a>
+                        <a href="{{ route('guest-book.form') }}" class="btn btn-primary btn-lg px-4">Sign the guest book</a>
                         <a href="/admin" class="btn btn-outline-primary btn-lg px-4">Open admin dashboard</a>
                     </div>
                 </div>
