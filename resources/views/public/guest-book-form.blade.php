@@ -1,13 +1,18 @@
+@php($eventSettings = \App\Models\EventSetting::current())
+
 @extends('layouts.public')
 
 @section('title', 'Guest Book Registration')
 @section('meta_description', 'Submit a guest message for the current event.')
 
 @section('page-content')
-    <section class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="guest-form-card shadow-sm">
+    @php($formBackground = $eventSettings?->formBackgroundUrl())
+
+    <section class="guest-registration-shell @if($formBackground) has-custom-background @endif" @if($formBackground) style="background-image: linear-gradient(135deg, rgba(15,23,42,0.72), rgba(15,23,42,0.42)), url('{{ $formBackground }}');" @endif>
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="guest-form-card shadow-sm">
                     <div class="mb-4 text-center">
                         <p class="eyebrow mb-2">Guest registration</p>
                         <h1 class="h2 fw-bold mb-1">Sign the guest book</h1>

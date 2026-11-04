@@ -4,23 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class EventSetting extends Model
 {
     use HasFactory;
 
-    /**
-     * The database table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'event_settings';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'event_name',
         'event_description',
@@ -29,20 +20,35 @@ class EventSetting extends Model
         'is_active',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'is_active' => 'boolean',
     ];
 
-    /**
-     * Scope the active event configuration.
-     */
+    public static function current(): ?self
+    {
+        return static::query()->where('is_active', true)->first() ?? static::query()->first();
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function mainBackgroundUrl(): ?string
+    {
+        if (! $this->main_background) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->main_background);
+    }
+
+    public function formBackgroundUrl(): ?string
+    {
+        if (! $this->form_background) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->form_background);
     }
 }

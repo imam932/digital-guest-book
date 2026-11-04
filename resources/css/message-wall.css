@@ -4,8 +4,9 @@
     min-height: 100vh;
     padding: 2rem;
     background:
-        linear-gradient(135deg, rgba(11, 18, 32, 0.96), rgba(37, 99, 235, 0.82)),
-        url('/images/event-bg.jpg') center/cover no-repeat;
+        linear-gradient(135deg, rgba(11, 18, 32, 0.96), rgba(37, 99, 235, 0.82));
+    background-size: cover;
+    background-position: center;
     overflow: hidden;
 }
 

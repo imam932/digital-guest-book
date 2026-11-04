@@ -11,7 +11,7 @@
         <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
         <a class="nav-link {{ request()->routeIs('admin.guest-books.*') ? 'active' : '' }}" href="{{ route('admin.guest-books.index') }}">Guest Book Records</a>
         <a class="nav-link {{ request()->routeIs('admin.companies.*') ? 'active' : '' }}" href="{{ route('admin.companies.index') }}">Companies</a>
-        <a class="nav-link disabled text-muted" href="#" tabindex="-1" aria-disabled="true">Event Settings</a>
+        <a class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}" href="{{ route('admin.settings') }}">Event Settings</a>
     </nav>
 
     <div class="mt-auto pt-4 border-top">

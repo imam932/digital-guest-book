@@ -1,9 +1,11 @@
+@php($eventSettings = \App\Models\EventSetting::current())
+
 <header class="public-header">
     <nav class="navbar navbar-expand-lg navbar-dark public-navbar">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url('/') }}">
                 <span class="brand-mark">DG</span>
-                <span>Digital Guest Book</span>
+                <span>{{ $eventSettings?->event_name ?? 'Digital Guest Book' }}</span>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav" aria-controls="publicNav" aria-expanded="false" aria-label="Toggle navigation">

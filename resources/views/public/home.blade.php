@@ -1,7 +1,9 @@
+@php($eventSettings = \App\Models\EventSetting::current())
+
 @extends('layouts.public')
 
-@section('title', 'Digital Guest Book | Corporate Events')
-@section('meta_description', 'Interactive guest book experience for corporate events and executive gatherings.')
+@section('title', ($eventSettings?->event_name ?? 'Digital Guest Book').' | Corporate Events')
+@section('meta_description', $eventSettings?->event_description ?? 'Interactive guest book experience for corporate events and executive gatherings.')
 
 @section('page-content')
     <section class="public-hero">
@@ -9,9 +11,9 @@
             <div class="row align-items-center g-5">
                 <div class="col-lg-7">
                     <p class="eyebrow mb-3">Corporate event experience</p>
-                    <h1 class="display-4 fw-bold mb-3">Create a lasting first impression.</h1>
+                    <h1 class="display-4 fw-bold mb-3">{{ $eventSettings?->event_name ?? 'Create a lasting first impression.' }}</h1>
                     <p class="lead text-secondary mb-4">
-                        Capture attendee stories, celebrate milestones, and collect memorable messages in one interactive guest book.
+                        {{ $eventSettings?->event_description ?? 'Capture attendee stories, celebrate milestones, and collect memorable messages in one interactive guest book.' }}
                     </p>
                     <div class="d-flex flex-column flex-sm-row gap-3">
                         <a href="{{ route('guest-book.form') }}" class="btn btn-primary btn-lg px-4">Sign the guest book</a>
@@ -23,8 +25,8 @@
                     <div class="hero-card shadow-lg">
                         <div class="card-body p-4 p-lg-5">
                             <span class="badge bg-primary-subtle text-primary mb-3">Event spotlight</span>
-                            <h2 class="h4 fw-semibold mb-3">Annual Leadership Summit</h2>
-                            <p class="text-secondary mb-4">A celebration of innovation, team culture, and shared achievements across the company.</p>
+                            <h2 class="h4 fw-semibold mb-3">{{ $eventSettings?->event_name ?? 'Annual Leadership Summit' }}</h2>
+                            <p class="text-secondary mb-4">{{ $eventSettings?->event_description ?? 'A celebration of innovation, team culture, and shared achievements across the company.' }}</p>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item px-0">4,200 guests</li>
                                 <li class="list-group-item px-0">230 messages today</li>

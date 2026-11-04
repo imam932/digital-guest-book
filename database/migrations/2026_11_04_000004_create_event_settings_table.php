@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('event_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('event_name');
+            $table->string('event_name')->default('Digital Guest Book');
             $table->text('event_description')->nullable();
             $table->string('main_background')->nullable();
             $table->string('form_background')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-
-            $table->unique('is_active', 'event_settings_active_unique');
         });
     }
 

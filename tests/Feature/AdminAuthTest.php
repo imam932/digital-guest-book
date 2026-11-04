@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AdminAuthTest extends TestCase
@@ -63,5 +65,30 @@ class AdminAuthTest extends TestCase
 
         $response->assertRedirect('/admin/login');
         $this->assertGuest();
+    }
+
+    public function test_admin_can_update_event_settings_with_uploaded_backgrounds(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $response = $this->post('/admin/settings', [
+            'event_name' => 'Northwind Summit',
+            'event_description' => 'A celebration of innovation and customer success.',
+            'main_background' => UploadedFile::fake()->image('main-bg.jpg', 1200, 800)->size(120),
+            'form_background' => UploadedFile::fake()->image('form-bg.png', 1200, 900)->size(120),
+        ]);
+
+        $response->assertRedirect('/admin/settings');
+
+        $this->assertDatabaseHas('event_settings', [
+            'event_name' => 'Northwind Summit',
+            'event_description' => 'A celebration of innovation and customer success.',
+        ]);
+
+        $this->assertDatabaseCount('event_settings', 1);
+        $this->assertTrue(Storage::disk('public')->exists('event-settings'));
     }
 }

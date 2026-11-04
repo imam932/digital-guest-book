@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventSettingsController;
 use App\Http\Controllers\Admin\GuestBookController as AdminGuestBookController;
 use App\Http\Controllers\Public\GuestBookController as PublicGuestBookController;
 use App\Http\Controllers\Public\MessageWallController;
@@ -44,6 +45,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{company}/toggle-status', [CompanyController::class, 'toggleStatus'])->name('toggle-status');
             Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
         });
+
+        Route::get('/settings', [EventSettingsController::class, 'index'])->name('settings');
+        Route::post('/settings', [EventSettingsController::class, 'update'])->name('settings.update');
 
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     });
