@@ -56,11 +56,11 @@ class GuestBookController extends Controller
             'company_id' => $company->id,
             'guest_name' => trim($validated['guest_name']),
             'message' => trim(strip_tags($validated['message'])),
-            'display_status' => 'pending',
+            'display_status' => 'displayed',
         ]);
 
         return response()->json([
-            'message' => 'Thank you! Your message has been received and is pending review.',
+            'message' => 'Terima Kasih! Pesan Anda telah terkirim, lihat di laman utama.',
             'guestBook' => [
                 'id' => $guestBook->id,
                 'guest_name' => $guestBook->guest_name,
