@@ -85,8 +85,9 @@
 
 .message-popup {
     position: fixed;
-    right: 2rem;
-    bottom: 2rem;
+    left: 40%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     z-index: 20;
     width: min(420px, calc(100vw - 2rem));
     padding: 1.15rem 1.2rem;
@@ -169,7 +170,9 @@
     }
 
     .message-popup {
-        right: 1rem;
-        bottom: 1rem;
+        width: min(92vw, 420px);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 }
