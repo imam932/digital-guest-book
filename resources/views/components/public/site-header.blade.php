@@ -14,10 +14,8 @@
 
             <div class="collapse navbar-collapse" id="publicNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2 mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="#guest-book">Guest Book</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                    <li class="nav-item"><a class="btn btn-outline-light ms-lg-3" href="{{ url('/admin') }}">Admin</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('guest-book.form') }}">Guest Book</a></li>
+                    <li class="nav-item"><a class="btn btn-outline-light ms-lg-3" href="{{ route('message-wall') }}">Display</a></li>
                 </ul>
             </div>
         </div>
