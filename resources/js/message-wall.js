@@ -92,17 +92,26 @@ document.addEventListener('DOMContentLoaded', () => {
         state.popupTimer = window.setTimeout(hidePopup, 5000);
     };
 
-    const appendMessage = (message, showPopup) => {
+    const appendMessage = (message, showPopup, prepend = false) => {
         const id = String(message.id);
         if (state.seenIds.has(id)) return;
 
-        const wasNearBottom = isNearBottom();
+        const wasNearTop = wall.scrollTop < 160;
         state.seenIds.add(id);
-        wall.appendChild(createMessageCard(message));
+        const card = createMessageCard(message);
+
+        if (prepend && wall.firstChild) {
+            wall.insertBefore(card, wall.firstChild);
+        } else {
+            wall.appendChild(card);
+        }
+
         applyWallLayout();
 
         if (showPopup) renderPopup(message);
-        if (wasNearBottom) wall.scrollTo({ top: wall.scrollHeight, behavior: 'smooth' });
+        if (prepend && wasNearTop) {
+            wall.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const fetchMessages = async () => {
@@ -115,15 +124,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Unable to load messages');
 
             const payload = await response.json();
-            const messages = [...(payload.messages ?? [])].sort((a, b) => Number(a.id) - Number(b.id));
+            const messages = [...(payload.messages ?? [])];
+            const orderedMessages = state.initialLoad
+                ? messages.sort((a, b) => Number(b.id) - Number(a.id))
+                : messages.sort((a, b) => Number(a.id) - Number(b.id));
 
-            messages.forEach((message) => appendMessage(message, !state.initialLoad));
+            orderedMessages.forEach((message) => appendMessage(message, !state.initialLoad, !state.initialLoad));
 
             if (payload.last_id) state.lastId = Math.max(state.lastId, Number(payload.last_id));
 
             if (state.initialLoad) {
                 state.initialLoad = false;
-                wall.scrollTop = wall.scrollHeight;
+                wall.scrollTop = 0;
             }
         } catch (error) {
             console.warn('Message polling failed:', error);
