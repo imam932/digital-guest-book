@@ -10,7 +10,7 @@
             @yield('page-content')
         </main>
 
-        @unless (request()->routeIs('message-wall'))
+        @unless (request()->routeIs('message-wall', 'guest-book.form'))
             @include('components.public.site-footer')
         @endunless
     </div>

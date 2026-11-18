@@ -120,6 +120,19 @@
     font-weight: 600;
 }
 
+.guest-form-navigation {
+    width: 100%;
+}
+
+.guest-form-navigation .btn {
+    min-height: 3.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.9rem;
+    font-weight: 600;
+}
+
 @media (max-width: 576px) {
     .guest-form-card {
         padding: 1.25rem;

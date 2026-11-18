@@ -85,7 +85,7 @@ class GuestBookController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Terima Kasih! Pesan Anda telah terkirim, lihat di laman utama.',
+            'message' => 'Thank you! Your message has been sent. Please check the screen.',
             'guestBook' => [
                 'id' => $guestBook->id,
                 'guest_name' => $guestBook->guest_name,

@@ -63,6 +63,11 @@
                             </button>
                         </div>
                     </form>
+
+                    <div class="guest-form-navigation d-flex flex-column flex-sm-row gap-3 mt-4">
+                        <a href="{{ route('home') }}" class="btn btn-outline-primary btn-lg flex-fill">Home</a>
+                        <a href="{{ route('message-wall') }}" class="btn btn-primary btn-lg flex-fill">Display</a>
+                    </div>
                 </div>
             </div>
         </div>
