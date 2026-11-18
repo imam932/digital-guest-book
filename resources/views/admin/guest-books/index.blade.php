@@ -77,7 +77,7 @@
                         @forelse ($guestBooks as $guestBook)
                             <tr>
                                 <td>{{ $guestBook->guest_name }}</td>
-                                <td>{{ $guestBook->company?->name ?? 'Unknown' }}</td>
+                                <td>{{ $guestBook->resolvedCompanyName() }}</td>
                                 <td>
                                     <div class="message-preview" data-bs-toggle="modal" data-bs-target="#messageModal{{ $guestBook->id }}" style="cursor:pointer; max-width: 320px;">
                                         {{ Str::limit(strip_tags($guestBook->message), 80) }}
@@ -124,7 +124,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <p><strong>Name:</strong> {{ $guestBook->guest_name }}</p>
-                                            <p><strong>Company:</strong> {{ $guestBook->company?->name ?? 'Unknown' }}</p>
+                                            <p><strong>Company:</strong> {{ $guestBook->resolvedCompanyName() }}</p>
                                             <p><strong>Status:</strong> {{ ucfirst($guestBook->display_status) }}</p>
                                             <p class="mb-0"><strong>Message:</strong></p>
                                             <div class="mt-2 text-body-secondary">{{ $guestBook->message }}</div>

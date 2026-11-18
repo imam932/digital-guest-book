@@ -25,7 +25,13 @@ class GuestBookController extends Controller
         $query = GuestBook::query()->with('company:id,name');
 
         if ($search !== '') {
-            $query->where('guest_name', 'like', "%{$search}%");
+            $query->where(function ($subQuery) use ($search) {
+                $subQuery->where('guest_name', 'like', "%{$search}%")
+                    ->orWhere('other_company', 'like', "%{$search}%")
+                    ->orWhereHas('company', function ($companyQuery) use ($search) {
+                        $companyQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
         }
 
         if ($companyId) {
@@ -72,7 +78,13 @@ class GuestBookController extends Controller
         $query = GuestBook::query()->with('company:id,name');
 
         if ($search !== '') {
-            $query->where('guest_name', 'like', "%{$search}%");
+            $query->where(function ($subQuery) use ($search) {
+                $subQuery->where('guest_name', 'like', "%{$search}%")
+                    ->orWhere('other_company', 'like', "%{$search}%")
+                    ->orWhereHas('company', function ($companyQuery) use ($search) {
+                        $companyQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
         }
 
         if ($companyId) {
@@ -103,7 +115,7 @@ class GuestBookController extends Controller
                     fputcsv($handle, [
                         $row->id,
                         $row->guest_name,
-                        $row->company?->name ?? 'Unknown',
+                        $row->resolvedCompanyName(),
                         $row->display_status,
                         strip_tags($row->message),
                         $row->created_at->toDateTimeString(),

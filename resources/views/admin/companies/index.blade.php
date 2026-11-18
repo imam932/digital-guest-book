@@ -9,7 +9,11 @@
                 <p class="eyebrow text-primary mb-2">Directory</p>
                 <h1 class="h2 fw-bold mb-0">Companies</h1>
             </div>
-            <button type="button" class="btn btn-primary mt-3 mt-md-0" data-bs-toggle="collapse" data-bs-target="#companyFormPanel">Create company</button>
+            <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+                <a href="{{ route('admin.companies.template') }}" class="btn btn-outline-secondary">Download template</a>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#companyImportPanel">Import Excel</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#companyFormPanel">Create company</button>
+            </div>
         </div>
 
         @if (session('success'))
@@ -19,6 +23,28 @@
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
+
+        <div class="collapse mb-4" id="companyImportPanel">
+            <div class="panel-card">
+                <h2 class="h5 fw-semibold mb-3">Import company names</h2>
+                <form method="POST" action="{{ route('admin.companies.import') }}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-8">
+                            <label for="company_import_file" class="form-label">Excel file</label>
+                            <input id="company_import_file" name="file" type="file" class="form-control @error('file') is-invalid @enderror" accept=".xlsx,.xls,.csv" required>
+                            @error('file')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 d-grid">
+                            <button type="submit" class="btn btn-primary">Import</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <div class="collapse {{ $errors->any() || request()->routeIs('admin.companies.create') ? 'show' : '' }} mb-4" id="companyFormPanel">
             <div class="panel-card">

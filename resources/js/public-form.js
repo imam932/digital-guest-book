@@ -1,3 +1,9 @@
+import $ from 'jquery';
+import 'select2/dist/css/select2.min.css';
+
+window.jQuery = $;
+window.$ = $;
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('guestBookForm');
 
@@ -6,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const companySelect = document.getElementById('company_id');
+    const companyOtherInput = document.getElementById('other_company');
+    const manualCompanyField = document.getElementById('manualCompanyField');
     const guestNameInput = document.getElementById('guest_name');
     const messageInput = document.getElementById('message');
     const alertBox = document.getElementById('guestBookAlert');
@@ -35,6 +43,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const toggleManualCompanyField = () => {
+        const selectedValue = companySelect.value;
+        const shouldShow = selectedValue === 'other';
+
+        if (manualCompanyField) {
+            manualCompanyField.classList.toggle('is-visible', shouldShow);
+            manualCompanyField.hidden = !shouldShow;
+
+            if (shouldShow) {
+                setTimeout(() => {
+                    companyOtherInput?.focus();
+                }, 120);
+            }
+        }
+
+        if (! shouldShow && companyOtherInput) {
+            companyOtherInput.value = '';
+            const otherError = document.querySelector('[data-error-for="other_company"]');
+            if (otherError) {
+                otherError.textContent = '';
+            }
+        }
+    };
+
+    companySelect.addEventListener('change', toggleManualCompanyField);
+
+    const initSelect2 = async () => {
+        if (! companySelect) {
+            return;
+        }
+
+        try {
+            await import('select2');
+        } catch (error) {
+            console.error('Select2 failed to load:', error);
+            return;
+        }
+
+        if (typeof $.fn.select2 !== 'function') {
+            return;
+        }
+
+        $(companySelect).select2({
+            width: '100%',
+            placeholder: 'Search or select a company',
+            allowClear: true,
+            language: {
+                noResults: () => 'No companies found',
+            },
+        });
+
+        $(companySelect).off('change.toggleManualCompanyField').on('change.toggleManualCompanyField', toggleManualCompanyField);
+        $(companySelect).off('select2:select.select2ManualCompany select2:unselect.select2ManualCompany').on('select2:select.select2ManualCompany select2:unselect.select2ManualCompany', function () {
+            toggleManualCompanyField();
+        });
+    };
+
     const fetchActiveCompanies = async () => {
         try {
             const response = await fetch('/api/companies/active', {
@@ -57,9 +122,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.textContent = company.name;
                 companySelect.appendChild(option);
             });
+
+            if (! Array.from(companySelect.options).some((option) => option.value === 'other')) {
+                const otherOption = document.createElement('option');
+                otherOption.value = 'other';
+                otherOption.textContent = 'Other';
+                companySelect.appendChild(otherOption);
+            }
+
+            if ($(companySelect).hasClass('select2-hidden-accessible')) {
+                $(companySelect).val('').trigger('change.select2');
+            }
         } catch (error) {
             companySelect.innerHTML = '<option value="">No active companies available</option>';
+            if (! Array.from(companySelect.options).some((option) => option.value === 'other')) {
+                const otherOption = document.createElement('option');
+                otherOption.value = 'other';
+                otherOption.textContent = 'Other';
+                companySelect.appendChild(otherOption);
+            }
             setAlert('danger', 'No active companies are available right now. Please try again later.');
+        } finally {
+            initSelect2();
+            toggleManualCompanyField();
         }
     };
 
@@ -70,18 +155,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    messageInput.addEventListener('input', syncMessageCounter);
+    const ensureLongMessageScroll = () => {
+        const isOverflowing = messageInput.scrollHeight > messageInput.clientHeight + 6;
+
+        if (isOverflowing) {
+            messageInput.scrollTop = messageInput.scrollHeight;
+
+            const formBottom = form.getBoundingClientRect().bottom;
+            const viewportHeight = window.innerHeight;
+
+            if (viewportHeight > 0 && formBottom > viewportHeight - 180) {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth',
+                });
+            }
+        }
+    };
+
+    messageInput.addEventListener('input', () => {
+        syncMessageCounter();
+        ensureLongMessageScroll();
+    });
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         clearAlerts();
 
-        const formData = new FormData(form);
+        const selectedCompany = companySelect.value;
         const payload = {
             guest_name: guestNameInput.value.trim(),
-            company_id: companySelect.value,
+            company_id: selectedCompany,
+            other_company: selectedCompany === 'other' ? companyOtherInput.value.trim() : null,
             message: messageInput.value.trim(),
-            _token: formData.get('_token'),
+            _token: form.querySelector('input[name="_token"]').value,
         };
 
         try {
@@ -92,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': formData.get('_token'),
+                    'X-CSRF-TOKEN': payload._token,
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 body: JSON.stringify(payload),
@@ -116,6 +223,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             form.reset();
+            if ($(companySelect).hasClass('select2-hidden-accessible')) {
+                $(companySelect).val('').trigger('change.select2');
+            }
+            companyOtherInput.value = '';
+            toggleManualCompanyField();
             syncMessageCounter();
             setAlert('success', result.message || 'Your message was submitted successfully.');
         } catch (error) {
@@ -126,5 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     syncMessageCounter();
+    toggleManualCompanyField();
+    initSelect2();
     fetchActiveCompanies();
 });

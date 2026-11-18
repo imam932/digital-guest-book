@@ -73,7 +73,7 @@
                                 @forelse ($latestMessages as $message)
                                     <tr>
                                         <td>{{ $message->guest_name }}</td>
-                                        <td>{{ $message->company?->name ?? 'Unknown' }}</td>
+                                        <td>{{ $message->resolvedCompanyName() }}</td>
                                         <td>
                                             <span class="badge {{ $message->display_status === 'displayed' ? 'bg-success-subtle text-success' : ($message->display_status === 'pending' ? 'bg-warning-subtle text-warning' : 'bg-secondary-subtle text-secondary') }}">
                                                 {{ ucfirst($message->display_status) }}

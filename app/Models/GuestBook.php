@@ -17,6 +17,7 @@ class GuestBook extends Model
      */
     protected $fillable = [
         'company_id',
+        'other_company',
         'guest_name',
         'message',
         'display_status',
@@ -38,5 +39,12 @@ class GuestBook extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function resolvedCompanyName(): string
+    {
+        return trim((string) ($this->company?->name ?? $this->other_company ?? 'Unknown')) !== ''
+            ? trim((string) ($this->company?->name ?? $this->other_company ?? 'Unknown'))
+            : 'Unknown';
     }
 }

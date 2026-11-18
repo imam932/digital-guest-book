@@ -9,9 +9,9 @@ use App\Http\Controllers\Public\GuestBookController as PublicGuestBookController
 use App\Http\Controllers\Public\MessageWallController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'public.home')->name('home');
+Route::view('/home', 'public.home')->name('home');
 Route::view('/display', 'public.message-wall')->name('message-wall');
-Route::get('/guest-book', fn () => view('public.guest-book-form'))->name('guest-book.form');
+Route::get('/', fn () => view('public.guest-book-form'))->name('guest-book.form');
 Route::post('/guest-book', [PublicGuestBookController::class, 'store'])->name('guest-book.store');
 Route::get('/api/companies/active', function () {
     return response()->json(
@@ -39,6 +39,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::prefix('companies')->name('companies.')->group(function () {
             Route::get('/', [CompanyController::class, 'index'])->name('index');
             Route::get('/create', [CompanyController::class, 'create'])->name('create');
+            Route::get('/template', [CompanyController::class, 'downloadTemplate'])->name('template');
+            Route::post('/import', [CompanyController::class, 'import'])->name('import');
             Route::post('/', [CompanyController::class, 'store'])->name('store');
             Route::get('/{company}/edit', [CompanyController::class, 'edit'])->name('edit');
             Route::put('/{company}', [CompanyController::class, 'update'])->name('update');

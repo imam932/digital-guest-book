@@ -15,32 +15,56 @@ class GuestBookController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $rules = [
             'guest_name' => ['required', 'string', 'max:255'],
-            'company_id' => ['required', 'integer', 'exists:companies,id'],
+            'company_id' => ['required'],
             'message' => ['required', 'string', 'min:10', 'max:2000'],
-        ], [
+        ];
+
+        $messages = [
             'guest_name.required' => 'Please enter your name.',
             'company_id.required' => 'Please select a company.',
-            'company_id.exists' => 'The selected company is invalid or unavailable.',
             'message.required' => 'Please add a message.',
             'message.min' => 'Your message must be at least 10 characters long.',
             'message.max' => 'Your message exceeds the maximum allowed length.',
-        ]);
+        ];
 
-        $company = Company::active()->find($validated['company_id']);
-
-        if (! $company) {
-            throw ValidationException::withMessages([
-                'company_id' => ['Please select an active company.'],
-            ]);
+        if ($request->input('company_id') === 'other') {
+            $rules['company_id'] = ['required', 'in:other'];
+            $rules['other_company'] = ['required', 'string', 'max:150'];
+            $messages['other_company.required'] = 'Please enter your company name.';
+            $messages['other_company.max'] = 'Company name must not exceed 150 characters.';
+        } else {
+            $rules['company_id'] = ['required', 'integer', 'exists:companies,id'];
+            $rules['other_company'] = ['nullable', 'prohibited'];
+            $messages['company_id.integer'] = 'Please select a valid company.';
+            $messages['company_id.exists'] = 'The selected company is invalid or unavailable.';
         }
 
+        $validated = $request->validate($rules, $messages);
+
+        if ($validated['company_id'] === 'other') {
+            $validated['other_company'] = trim((string) $validated['other_company']);
+            $validated['company_id'] = null;
+            $company = null;
+        } else {
+            $company = Company::active()->find($validated['company_id']);
+
+            if (! $company) {
+                throw ValidationException::withMessages([
+                    'company_id' => ['Please select an active company.'],
+                ]);
+            }
+
+            $validated['other_company'] = null;
+        }
+
+        $companyKey = $company?->id ?? 'other:' . strtolower($validated['other_company']);
         $ip = $request->ip();
-        $messageHash = hash('sha256', strtolower(trim($validated['guest_name'])) . '|' . strtolower(trim($validated['message'])) . '|' . $company->id . '|' . ($ip ?? 'unknown'));
+        $messageHash = hash('sha256', strtolower(trim($validated['guest_name'])) . '|' . strtolower(trim($validated['message'])) . '|' . $companyKey . '|' . ($ip ?? 'unknown'));
 
         $recentSubmission = DB::table('guest_books')
-            ->where('company_id', $company->id)
+            ->when($company, fn ($query) => $query->where('company_id', $company->id), fn ($query) => $query->where('other_company', trim((string) $validated['other_company'])))
             ->where('guest_name', trim($validated['guest_name']))
             ->where('message', trim($validated['message']))
             ->where('created_at', '>=', now()->subMinutes(10))
@@ -53,7 +77,8 @@ class GuestBookController extends Controller
         }
 
         $guestBook = GuestBook::create([
-            'company_id' => $company->id,
+            'company_id' => $company?->id,
+            'other_company' => $company ? null : $validated['other_company'],
             'guest_name' => trim($validated['guest_name']),
             'message' => trim(strip_tags($validated['message'])),
             'display_status' => 'displayed',
@@ -65,6 +90,7 @@ class GuestBookController extends Controller
                 'id' => $guestBook->id,
                 'guest_name' => $guestBook->guest_name,
                 'company_id' => $guestBook->company_id,
+                'other_company' => $guestBook->other_company,
             ],
         ], 201);
     }

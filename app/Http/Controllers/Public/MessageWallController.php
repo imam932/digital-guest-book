@@ -23,6 +23,7 @@ class MessageWallController extends Controller
                 'id',
                 'guest_name',
                 'company_id',
+                'other_company',
                 'message',
                 'created_at',
             ]);
@@ -32,7 +33,7 @@ class MessageWallController extends Controller
                 return [
                     'id' => (int) $message->id,
                     'name' => $message->guest_name,
-                    'company' => $message->company?->name ?? 'Guest',
+                    'company' => $message->resolvedCompanyName(),
                     'message' => $message->message,
                     'created_at' => $message->created_at?->toISOString(),
                 ];

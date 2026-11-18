@@ -91,4 +91,79 @@ class AdminAuthTest extends TestCase
         $this->assertDatabaseCount('event_settings', 1);
         $this->assertTrue(Storage::disk('public')->exists('event-settings'));
     }
+
+    public function test_admin_can_import_companies_from_excel_file(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray([
+            ['company_name'],
+            ['PT Maju Bersama'],
+            ['CV Sejahtera'],
+        ]);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $path = tempnam(sys_get_temp_dir(), 'company-import-');
+        $writer->save($path);
+
+        $this->post('/admin/companies/import', [
+            'file' => new UploadedFile($path, 'companies.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', null, true),
+        ])
+            ->assertRedirect('/admin/companies');
+
+        $this->assertDatabaseHas('companies', ['name' => 'PT Maju Bersama']);
+        $this->assertDatabaseHas('companies', ['name' => 'CV Sejahtera']);
+
+        unlink($path);
+    }
+
+    public function test_admin_can_download_company_import_template(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $response = $this->get('/admin/companies/template');
+
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
+
+    public function test_guest_can_submit_other_company_name(): void
+    {
+        $company = \App\Models\Company::factory()->create(['status' => 'active']);
+
+        $response = $this->postJson('/guest-book', [
+            'guest_name' => 'Ariana Smith',
+            'company_id' => 'other',
+            'other_company' => '  Nova Labs  ',
+            'message' => 'This is a wonderful event message.',
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('guest_books', [
+            'guest_name' => 'Ariana Smith',
+            'other_company' => 'Nova Labs',
+            'company_id' => null,
+        ]);
+
+        $this->assertDatabaseMissing('guest_books', [
+            'company_id' => $company->id,
+        ]);
+    }
+
+    public function test_guest_must_enter_a_manual_company_name_when_other_is_selected(): void
+    {
+        $response = $this->postJson('/guest-book', [
+            'guest_name' => 'Ariana Smith',
+            'company_id' => 'other',
+            'other_company' => '   ',
+            'message' => 'This is a wonderful event message.',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['other_company']);
+    }
 }
