@@ -20,8 +20,17 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
     text-decoration: none;
     pointer-events: auto;
+}
+
+.public-header__brand .brand-logo,
+.public-header__brand .brand-logo--small {
+    width: 70px;
+    height: auto;
+    max-height: 90px;
+    object-fit: contain;
 }
 
 .public-main {
