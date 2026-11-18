@@ -2,6 +2,7 @@
 
 @extends('layouts.public')
 
+@section('body_class', 'public-app message-wall-page')
 @section('title', 'Message Wall')
 @section('meta_description', 'Live guest book message wall for the current event.')
 

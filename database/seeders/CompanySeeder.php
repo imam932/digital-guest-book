@@ -17,6 +17,14 @@ class CompanySeeder extends Seeder
             ['name' => 'BluePeak Studio', 'status' => 'active'],
             ['name' => 'SummitWorks', 'status' => 'active'],
             ['name' => 'Riverstone Group', 'status' => 'inactive'],
+            ['name' => 'Orthstar Labs', 'status' => 'active'],
+            ['name' => 'Peak Studio', 'status' => 'active'],
+            ['name' => 'Summit Sun', 'status' => 'active'],
+            ['name' => 'Noman Group', 'status' => 'active'],
+            ['name' => 'Nthstar Labs', 'status' => 'active'],
+            ['name' => 'Blue Studio', 'status' => 'active'],
+            ['name' => 'Sit Works', 'status' => 'active'],
+            ['name' => 'Rstone Group', 'status' => 'active'],
         ];
 
         foreach ($companies as $company) {

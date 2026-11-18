@@ -10,6 +10,8 @@
             @yield('page-content')
         </main>
 
-        @include('components.public.site-footer')
+        @unless (request()->routeIs('message-wall'))
+            @include('components.public.site-footer')
+        @endunless
     </div>
 @endsection

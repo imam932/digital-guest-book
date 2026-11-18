@@ -38,7 +38,7 @@ class MessageWallController extends Controller
                     'created_at' => $message->created_at?->toISOString(),
                 ];
             })->values(),
-            'last_id' => $messages->last()?->id ?? (int) $lastId,
+            'last_id' => $messages->max('id') !== null ? (int) $messages->max('id') : (int) $lastId,
         ]);
     }
 }

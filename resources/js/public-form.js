@@ -1,15 +1,17 @@
 import $ from 'jquery';
+import select2Factory from 'select2/dist/js/select2.full.js';
 import 'select2/dist/css/select2.min.css';
 
 window.jQuery = $;
 window.$ = $;
 
+if (typeof select2Factory === 'function') {
+    select2Factory(window, $);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('guestBookForm');
-
-    if (! form) {
-        return;
-    }
+    if (! form) return;
 
     const companySelect = document.getElementById('company_id');
     const companyOtherInput = document.getElementById('other_company');
@@ -29,92 +31,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearAlerts = () => {
         alertBox.className = 'alert d-none';
         alertBox.textContent = '';
-        document.querySelectorAll('[data-error-for]').forEach((node) => {
-            node.textContent = '';
-        });
+        document.querySelectorAll('[data-error-for]').forEach((node) => { node.textContent = ''; });
     };
 
     const setLoadingState = (isLoading) => {
         submitButton.disabled = isLoading;
         submitButton.querySelector('.submit-text').textContent = isLoading ? 'Submitting...' : 'Submit message';
-        const spinner = submitButton.querySelector('.spinner-border');
-        if (spinner) {
-            spinner.classList.toggle('d-none', !isLoading);
-        }
+        submitButton.querySelector('.spinner-border')?.classList.toggle('d-none', ! isLoading);
     };
 
     const toggleManualCompanyField = () => {
-        const selectedValue = companySelect.value;
-        const shouldShow = selectedValue === 'other';
-
+        const shouldShow = companySelect.value === 'other';
         if (manualCompanyField) {
+            manualCompanyField.hidden = ! shouldShow;
             manualCompanyField.classList.toggle('is-visible', shouldShow);
-            manualCompanyField.hidden = !shouldShow;
-
-            if (shouldShow) {
-                setTimeout(() => {
-                    companyOtherInput?.focus();
-                }, 120);
-            }
         }
-
-        if (! shouldShow && companyOtherInput) {
-            companyOtherInput.value = '';
+        if (companyOtherInput) {
+            companyOtherInput.required = shouldShow;
+            if (! shouldShow) companyOtherInput.value = '';
+            else window.setTimeout(() => companyOtherInput.focus(), 120);
+        }
+        if (! shouldShow) {
             const otherError = document.querySelector('[data-error-for="other_company"]');
-            if (otherError) {
-                otherError.textContent = '';
-            }
+            if (otherError) otherError.textContent = '';
         }
     };
 
-    companySelect.addEventListener('change', toggleManualCompanyField);
-
-    const initSelect2 = async () => {
-        if (! companySelect) {
-            return;
-        }
-
-        try {
-            await import('select2');
-        } catch (error) {
-            console.error('Select2 failed to load:', error);
-            return;
-        }
-
+    const initSelect2 = () => {
         if (typeof $.fn.select2 !== 'function') {
+            console.error('Select2 is not available.');
             return;
         }
 
-        $(companySelect).select2({
-            width: '100%',
-            placeholder: 'Search or select a company',
-            allowClear: true,
-            language: {
-                noResults: () => 'No companies found',
-            },
-        });
+        if (! $(companySelect).hasClass('select2-hidden-accessible')) {
+            $(companySelect).select2({
+                width: '100%',
+                placeholder: 'Search or select a company',
+                allowClear: true,
+                language: { noResults: () => 'No companies found' },
+            });
+        }
 
-        $(companySelect).off('change.toggleManualCompanyField').on('change.toggleManualCompanyField', toggleManualCompanyField);
-        $(companySelect).off('select2:select.select2ManualCompany select2:unselect.select2ManualCompany').on('select2:select.select2ManualCompany select2:unselect.select2ManualCompany', function () {
-            toggleManualCompanyField();
-        });
+        $(companySelect).off('change.toggleManualCompany select2:select.toggleManualCompany select2:unselect.toggleManualCompany');
+        $(companySelect).on('change.toggleManualCompany select2:select.toggleManualCompany select2:unselect.toggleManualCompany', toggleManualCompanyField);
     };
 
     const fetchActiveCompanies = async () => {
         try {
             const response = await fetch('/api/companies/active', {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
             });
-
-            if (! response.ok) {
-                throw new Error('Unable to load companies.');
-            }
+            if (! response.ok) throw new Error('Unable to load companies.');
 
             const companies = await response.json();
-            companySelect.innerHTML = '<option value="">Select an active company</option>';
+            companySelect.innerHTML = '';
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Select an active company';
+            companySelect.appendChild(placeholder);
+
+            const otherOption = document.createElement('option');
+            otherOption.value = 'other';
+            otherOption.textContent = 'Others';
+            companySelect.appendChild(otherOption);
 
             companies.forEach((company) => {
                 const option = document.createElement('option');
@@ -123,24 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 companySelect.appendChild(option);
             });
 
-            if (! Array.from(companySelect.options).some((option) => option.value === 'other')) {
-                const otherOption = document.createElement('option');
-                otherOption.value = 'other';
-                otherOption.textContent = 'Other';
-                companySelect.appendChild(otherOption);
-            }
-
             if ($(companySelect).hasClass('select2-hidden-accessible')) {
                 $(companySelect).val('').trigger('change.select2');
             }
         } catch (error) {
-            companySelect.innerHTML = '<option value="">No active companies available</option>';
-            if (! Array.from(companySelect.options).some((option) => option.value === 'other')) {
-                const otherOption = document.createElement('option');
-                otherOption.value = 'other';
-                otherOption.textContent = 'Other';
-                companySelect.appendChild(otherOption);
-            }
+            companySelect.innerHTML = '<option value="">No active companies available</option><option value="other">Others</option>';
             setAlert('danger', 'No active companies are available right now. Please try again later.');
         } finally {
             initSelect2();
@@ -149,34 +116,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const syncMessageCounter = () => {
-        const length = messageInput.value.length;
-        if (messageCounter) {
-            messageCounter.textContent = `${length} / 2000`;
-        }
-    };
-
-    const ensureLongMessageScroll = () => {
-        const isOverflowing = messageInput.scrollHeight > messageInput.clientHeight + 6;
-
-        if (isOverflowing) {
-            messageInput.scrollTop = messageInput.scrollHeight;
-
-            const formBottom = form.getBoundingClientRect().bottom;
-            const viewportHeight = window.innerHeight;
-
-            if (viewportHeight > 0 && formBottom > viewportHeight - 180) {
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth',
-                });
-            }
-        }
+        if (messageCounter) messageCounter.textContent = `${messageInput.value.length} / 2000`;
     };
 
     messageInput.addEventListener('input', () => {
         syncMessageCounter();
-        ensureLongMessageScroll();
+        if (messageInput.scrollHeight > messageInput.clientHeight + 6) {
+            messageInput.scrollTop = messageInput.scrollHeight;
+        }
     });
+
+    companySelect.addEventListener('change', toggleManualCompanyField);
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -193,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             setLoadingState(true);
-
             const response = await fetch(form.action, {
                 method: 'POST',
                 headers: {
@@ -204,21 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(payload),
             });
-
             const result = await response.json();
 
             if (! response.ok) {
-                const errors = result.errors ?? {};
-
-                Object.entries(errors).forEach(([field, messages]) => {
+                Object.entries(result.errors ?? {}).forEach(([field, messages]) => {
                     const fieldError = document.querySelector(`[data-error-for="${field}"]`);
-                    if (fieldError) {
-                        fieldError.textContent = messages[0];
-                    }
+                    if (fieldError) fieldError.textContent = messages[0];
                 });
-
-                const message = result.message || 'Please correct the highlighted fields and try again.';
-                setAlert('danger', message);
+                setAlert('danger', result.message || 'Please correct the highlighted fields and try again.');
                 return;
             }
 
@@ -239,6 +181,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     syncMessageCounter();
     toggleManualCompanyField();
-    initSelect2();
     fetchActiveCompanies();
 });

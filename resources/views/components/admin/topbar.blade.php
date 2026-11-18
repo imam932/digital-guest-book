@@ -1,5 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container-fluid px-4">
+        <button type="button" class="btn btn-outline-secondary d-lg-none me-2" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+            Menu
+        </button>
         <span class="navbar-brand mb-0 h1 d-none d-lg-inline">Welcome back</span>
 
         <div class="ms-auto d-flex align-items-center gap-3">

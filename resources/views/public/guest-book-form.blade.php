@@ -34,13 +34,13 @@
                                 <label for="company_id" class="form-label">Company</label>
                                 <select id="company_id" name="company_id" class="form-select form-select-lg" required>
                                     <option value="">Select an active company</option>
-                                    <option value="other">Other</option>
+                                    <option value="other">Others</option>
                                 </select>
                                 <div class="invalid-feedback d-block" data-error-for="company_id"></div>
                             </div>
 
-                            <div id="manualCompanyField" class="col-12 manual-company-field" aria-live="polite">
-                                <label for="other_company" class="form-label">Company Name</label>
+                            <div id="manualCompanyField" class="col-12 manual-company-field" aria-live="polite" hidden>
+                                <label for="other_company" class="form-label">Company name</label>
                                 <input id="other_company" name="other_company" type="text" class="form-control form-control-lg" placeholder="Enter your company name" maxlength="150">
                                 <div class="invalid-feedback d-block" data-error-for="other_company"></div>
                             </div>
