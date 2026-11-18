@@ -17,7 +17,7 @@ class MessageWallController extends Controller
             ->with('company:id,name')
             ->where('display_status', 'displayed')
             ->where('id', '>', (int) $lastId)
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->limit(25)
             ->get([
                 'id',
