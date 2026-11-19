@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $this->call([
-            CompanySeeder::class,
-            GuestBookSeeder::class,
-        ]);
+        // $this->call([
+        //     CompanySeeder::class,
+        //     GuestBookSeeder::class,
+        // ]);
     }
 }
