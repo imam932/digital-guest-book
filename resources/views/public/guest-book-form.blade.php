@@ -66,7 +66,8 @@
                 </div>
             </div>
         </div>
-    </section>
-    <a href="{{ route('home') }}">Home</a>
+          <a href="{{ route('home') }}">Home</a>
     <a href="{{ route('message-wall') }}">Display</a>
+    </section>
+  
 @endsection
