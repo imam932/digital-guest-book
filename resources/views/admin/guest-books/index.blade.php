@@ -10,7 +10,7 @@
                 <h1 class="h2 fw-bold mb-0">Guest Book Records</h1>
             </div>
             <div class="d-flex gap-2 mt-3 mt-md-0">
-                <a href="{{ route('admin.guest-books.export', request()->query()) }}" class="btn btn-outline-primary">Export CSV</a>
+                <a href="{{ route('admin.guest-books.export', request()->query()) }}" class="btn btn-outline-primary">Export Excel</a>
             </div>
         </div>
 

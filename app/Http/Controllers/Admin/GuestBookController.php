@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class GuestBookController extends Controller
 {
@@ -99,33 +101,41 @@ class GuestBookController extends Controller
             $query->where('display_status', $displayStatus);
         }
 
-        $filename = 'guest-book-export-' . now()->format('YmdHis') . '.csv';
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Guest Books');
 
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+        $headers = ['ID', 'Guest Name', 'Company', 'Status', 'Message', 'Created At'];
+        $sheet->fromArray([$headers], null, 'A1');
 
-        $callback = function () use ($query) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['ID', 'Guest Name', 'Company', 'Status', 'Message', 'Created At']);
+        $rowNumber = 2;
+        $query->orderByDesc('created_at')->chunkById(100, function ($rows) use ($sheet, &$rowNumber) {
+            foreach ($rows as $row) {
+                $sheet->setCellValue("A{$rowNumber}", $row->id);
+                $sheet->setCellValue("B{$rowNumber}", $row->guest_name);
+                $sheet->setCellValue("C{$rowNumber}", $row->resolvedCompanyName());
+                $sheet->setCellValue("D{$rowNumber}", $row->display_status);
+                $sheet->setCellValue("E{$rowNumber}", strip_tags($row->message));
+                $sheet->setCellValue("F{$rowNumber}", $row->created_at->toDateTimeString());
+                $rowNumber++;
+            }
+        });
 
-            $query->orderByDesc('created_at')->chunkById(100, function ($rows) use ($handle) {
-                foreach ($rows as $row) {
-                    fputcsv($handle, [
-                        $row->id,
-                        $row->guest_name,
-                        $row->resolvedCompanyName(),
-                        $row->display_status,
-                        strip_tags($row->message),
-                        $row->created_at->toDateTimeString(),
-                    ]);
-                }
-            });
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+        $sheet->freezePane('A2');
+        $sheet->setAutoFilter("A1:F" . max(1, $rowNumber - 1));
 
-            fclose($handle);
-        };
+        foreach (['A' => 10, 'B' => 24, 'C' => 24, 'D' => 14, 'E' => 50, 'F' => 20] as $column => $width) {
+            $sheet->getColumnDimension($column)->setWidth($width);
+        }
 
-        return response()->stream($callback, 200, $headers);
+        $filename = 'guest-book-export-' . now()->format('YmdHis') . '.xlsx';
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 }
